@@ -15,6 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "A Day Closer – Scripture & reflection every day",
   description: "Build a simple daily rhythm of Scripture and reflection.",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

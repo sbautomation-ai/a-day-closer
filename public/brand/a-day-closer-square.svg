@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img">
+  <defs>
+    <style>
+      .bg { fill: #ffffff; }
+      .accent { fill: #5c6fb3; }
+    </style>
+  </defs>
+  <rect class="accent" x="256" y="256" width="96" height="416" rx="48" ry="48"/>
+  <rect class="accent" x="464" y="208" width="96" height="464" rx="48" ry="48"/>
+  <rect class="accent" x="672" y="256" width="96" height="416" rx="48" ry="48"/>
+  <rect class="accent" x="224" y="720" width="576" height="72" rx="36" ry="36"/>
+</svg>
+
