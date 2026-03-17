@@ -9,19 +9,14 @@ export default function LandingPage() {
       {/* Glass header */}
       <header className="sticky top-0 z-20 border-b border-white/10 bg-white/[0.06] backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-white/5">
-              <Image
-                src="/brand/a-day-closer.png"
-                alt="A Day Closer"
-                width={24}
-                height={24}
-                priority
-              />
-            </span>
-            <span className="text-base font-semibold text-white/90 tracking-tight">
-              a day closer
-            </span>
+          <div className="flex items-center gap-3">
+            <Image
+              src="/brand/a-day-closer-full.svg"
+              alt="a day closer"
+              width={220}
+              height={80}
+              priority
+            />
           </div>
           <nav className="flex items-center gap-2">
             <Link
