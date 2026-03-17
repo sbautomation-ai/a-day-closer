@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/Button";
 
 type AppShellProps = {
   children: React.ReactNode;
@@ -18,46 +17,67 @@ const nav = [
   { href: "/app/settings", label: "Settings" },
 ] as const;
 
-export function AppShell({ children, userEmail, signOut, showAdminLink }: AppShellProps) {
+export function AppShell({ children, userEmail: _userEmail, signOut, showAdminLink }: AppShellProps) {
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      <header className="sticky top-0 z-10 border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-4 py-3">
+    <div className="min-h-dvh">
+      {/* Glass header */}
+      <header className="sticky top-0 z-20 border-b border-white/10 bg-white/[0.06] backdrop-blur-xl">
+        <div className="mx-auto flex max-w-3xl items-center justify-between gap-2 px-4 py-3">
           <Link
             href="/app/today"
-            className="text-lg font-semibold text-zinc-900 dark:text-zinc-100"
+            className="text-base font-semibold text-white/90 tracking-tight hover:text-white transition-colors"
           >
             A Day Closer
           </Link>
-          <nav className="flex items-center gap-1">
-            {nav.map(({ href, label }) => (
-              <Link key={href} href={href}>
-                <Button
-                  variant={pathname === href ? "primary" : "ghost"}
-                  className="text-sm"
+
+          <nav className="flex items-center gap-0.5 flex-wrap">
+            {nav.map(({ href, label }) => {
+              const active = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={[
+                    "rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-150",
+                    active
+                      ? "bg-indigo-500/30 text-white border border-indigo-400/40"
+                      : "text-white/60 hover:text-white hover:bg-white/10",
+                  ].join(" ")}
                 >
                   {label}
-                </Button>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
             {showAdminLink && (
-              <Link href="/app/admin/reading-plan">
-                <Button variant="ghost" className="text-sm">
-                  Admin
-                </Button>
+              <Link
+                href="/app/admin/reading-plan"
+                className={[
+                  "rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-150",
+                  pathname === "/app/admin/reading-plan"
+                    ? "bg-indigo-500/30 text-white border border-indigo-400/40"
+                    : "text-white/60 hover:text-white hover:bg-white/10",
+                ].join(" ")}
+              >
+                Admin
               </Link>
             )}
-            <form action={signOut} className="ml-2">
-              <Button type="submit" variant="ghost" className="text-sm">
+            <form action={signOut} className="ml-1">
+              <button
+                type="submit"
+                className="rounded-full px-3 py-1.5 text-sm font-medium text-white/50 hover:text-white hover:bg-white/10 transition-all duration-150"
+              >
                 Sign out
-              </Button>
+              </button>
             </form>
           </nav>
         </div>
       </header>
-      <main className="mx-auto max-w-2xl px-4 py-6">{children}</main>
+
+      <main className="mx-auto max-w-3xl px-4 py-8 sm:py-10">
+        {children}
+      </main>
     </div>
   );
 }

@@ -8,20 +8,21 @@ export default function SignupPage() {
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-50 px-4 dark:bg-zinc-950">
+    <div className="flex min-h-dvh flex-col items-center justify-center px-4 py-16">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <Link href="/" className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+          <Link href="/" className="text-xl font-semibold text-white/90 hover:text-white transition-colors">
             A Day Closer
           </Link>
+          <p className="mt-1 text-sm text-white/40">Start your daily habit</p>
         </div>
         <AuthForm
           mode="signup"
           onSuccess={() => router.push("/app/today")}
         />
-        <p className="text-center text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="text-center text-sm text-white/40">
           Already have an account?{" "}
-          <Link href="/login" className="font-medium text-zinc-900 underline dark:text-zinc-100">
+          <Link href="/login" className="font-medium text-indigo-300 hover:text-indigo-200 transition-colors">
             Log in
           </Link>
         </p>

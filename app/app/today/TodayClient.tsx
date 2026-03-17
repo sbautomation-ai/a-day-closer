@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { completeToday } from "@/lib/actions/today";
-import { Button } from "@/components/ui/Button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Textarea } from "@/components/ui/Textarea";
 import { MoodSelector } from "@/components/today/MoodSelector";
 
@@ -41,38 +41,39 @@ export function TodayClient({
   }
 
   return (
-    <div className="space-y-4 border-t border-zinc-200 pt-4 dark:border-zinc-700">
+    <div className="space-y-5">
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-white/40">
           How are you today?
         </label>
         <MoodSelector value={mood} onChange={setMood} />
       </div>
       <div>
-        <label className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label className="mb-2 block text-xs font-medium uppercase tracking-wider text-white/40">
           Journal (optional)
         </label>
         <Textarea
           value={journalText}
           onChange={(e) => setJournalText(e.target.value)}
-          placeholder="Reflect on the reading..."
-          rows={4}
+          placeholder="Reflect on the reading…"
+          rows={5}
         />
       </div>
       {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-red-300">{error}</p>
       )}
-      <Button
+      <PrimaryButton
         onClick={handleSubmit}
         disabled={loading || alreadyCompleted}
-        className="w-full"
+        fullWidth
+        className="py-3"
       >
         {alreadyCompleted
-          ? "Completed today"
+          ? "Completed today ✓"
           : loading
             ? "Saving…"
             : "Save & complete today"}
-      </Button>
+      </PrimaryButton>
     </div>
   );
 }

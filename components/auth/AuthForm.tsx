@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/Button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Input } from "@/components/ui/Input";
-import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { GlassCard, GlassCardContent, GlassCardHeader } from "@/components/ui/GlassCard";
 
 type AuthFormProps = {
   mode: "signin" | "signup";
@@ -48,17 +48,17 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <h2 className="text-xl font-semibold">
+    <GlassCard className="w-full max-w-md">
+      <GlassCardHeader>
+        <h2 className="text-xl font-semibold text-white">
           {isSignUp ? "Create an account" : "Sign in"}
         </h2>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
+      </GlassCardHeader>
+      <GlassCardContent>
+        <form onSubmit={handleSubmit} className="space-y-5">
           {isSignUp && (
             <div>
-              <label htmlFor="name" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+              <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-white/70">
                 Name (optional)
               </label>
               <Input
@@ -72,7 +72,7 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
             </div>
           )}
           <div>
-            <label htmlFor="email" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-white/70">
               Email
             </label>
             <Input
@@ -86,7 +86,7 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
             />
           </div>
           <div>
-            <label htmlFor="password" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <label htmlFor="password" className="mb-1.5 block text-sm font-medium text-white/70">
               Password
             </label>
             <Input
@@ -103,18 +103,18 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
             <p
               className={`text-sm ${
                 message.type === "error"
-                  ? "text-red-600 dark:text-red-400"
-                  : "text-green-600 dark:text-green-400"
+                  ? "text-red-300"
+                  : "text-emerald-300"
               }`}
             >
               {message.text}
             </p>
           )}
-          <Button type="submit" disabled={loading} className="w-full">
+          <PrimaryButton type="submit" disabled={loading} fullWidth>
             {loading ? "Please wait…" : isSignUp ? "Sign up" : "Sign in"}
-          </Button>
+          </PrimaryButton>
         </form>
-      </CardContent>
-    </Card>
+      </GlassCardContent>
+    </GlassCard>
   );
 }

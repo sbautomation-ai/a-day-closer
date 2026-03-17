@@ -2,8 +2,15 @@ import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Card, CardContent, CardHeader } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { GlassCard, GlassCardContent, GlassCardHeader } from "@/components/ui/GlassCard";
+
+const MOOD_EMOJI: Record<number, string> = {
+  1: "😔",
+  2: "😕",
+  3: "😐",
+  4: "🙂",
+  5: "😊",
+};
 
 const MOOD_LABELS: Record<number, string> = {
   1: "Struggling",
@@ -39,59 +46,72 @@ export default async function EntryDetailPage({
     : [];
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Link href="/app/history">
-          <Button variant="ghost">← Back to history</Button>
-        </Link>
-      </div>
+    <div className="mx-auto max-w-xl space-y-4">
+      <Link
+        href="/app/history"
+        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-white/50 hover:text-white hover:bg-white/10 transition-all duration-150"
+      >
+        ← History
+      </Link>
 
-      <Card>
-        <CardHeader className="border-b border-zinc-100 pb-3 dark:border-zinc-800">
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
+      <GlassCard>
+        <GlassCardHeader>
+          <p className="text-xs text-white/40">
             {dateStr} · {entry.readingDay.season}
           </p>
-          <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">
+          <h1 className="mt-0.5 text-xl font-semibold text-white">
             {entry.readingDay.bibleReference}
           </h1>
-        </CardHeader>
-        <CardContent className="space-y-4">
+        </GlassCardHeader>
+        <GlassCardContent className="space-y-5">
           {"bibleText" in entry.readingDay && entry.readingDay.bibleText && (
-            <div className="rounded-md bg-zinc-900/95 px-4 py-3 text-sm leading-relaxed text-zinc-100 shadow-sm dark:bg-zinc-900">
+            <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-4 text-sm leading-relaxed text-white/80 backdrop-blur-sm">
               <p className="whitespace-pre-wrap">
                 {entry.readingDay.bibleText as string}
               </p>
             </div>
           )}
           {entry.readingDay.explanation && (
-            <p className="whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-white/65">
               {entry.readingDay.explanation}
             </p>
           )}
           {prompts.length > 0 && (
-            <ul className="list-inside list-disc space-y-1 text-zinc-700 dark:text-zinc-300">
-              {prompts.map((p, i) => (
-                <li key={i}>{p}</li>
-              ))}
-            </ul>
+            <div>
+              <p className="mb-2 text-xs font-medium uppercase tracking-wider text-white/40">
+                Reflection prompts
+              </p>
+              <ul className="space-y-2">
+                {prompts.map((p, i) => (
+                  <li key={i} className="flex gap-2.5 text-sm text-white/65">
+                    <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-indigo-400" />
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
           )}
           {entry.mood != null && (
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Mood: {MOOD_LABELS[entry.mood] ?? entry.mood}
-            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-white/40">Mood</span>
+              <span className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-xs text-white/60">
+                <span aria-hidden>{MOOD_EMOJI[entry.mood]}</span>
+                {MOOD_LABELS[entry.mood] ?? entry.mood}
+              </span>
+            </div>
           )}
           {entry.journalText && (
-            <div className="border-t border-zinc-200 pt-4 dark:border-zinc-700">
-              <h3 className="mb-2 text-sm font-medium text-zinc-700 dark:text-zinc-300">
+            <div className="border-t border-white/10 pt-5">
+              <p className="mb-2 text-xs font-medium uppercase tracking-wider text-white/40">
                 Journal
-              </h3>
-              <p className="whitespace-pre-wrap text-zinc-700 dark:text-zinc-300">
+              </p>
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-white/70">
                 {entry.journalText}
               </p>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </GlassCardContent>
+      </GlassCard>
     </div>
   );
 }

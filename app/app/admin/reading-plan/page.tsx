@@ -1,7 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
-import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { GlassCard, GlassCardContent } from "@/components/ui/GlassCard";
 import { AdminReadingPlanTable } from "./AdminReadingPlanTable";
 
 const DEFAULT_PLAN_SLUG = "core-365-day-journey";
@@ -28,13 +28,13 @@ export default async function AdminReadingPlanPage() {
   });
   if (!plan) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <p className="text-zinc-600 dark:text-zinc-400">
+      <GlassCard>
+        <GlassCardContent>
+          <p className="text-white/60">
             Default plan not found. Run seed:reading-plan.
           </p>
-        </CardContent>
-      </Card>
+        </GlassCardContent>
+      </GlassCard>
     );
   }
 
@@ -64,13 +64,13 @@ export default async function AdminReadingPlanPage() {
   }));
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-        Reading plan (admin)
-      </h1>
-      <p className="text-sm text-zinc-500 dark:text-zinc-400">
-        Default plan: {plan.name}. Read-only viewer for content review.
-      </p>
+    <div className="space-y-5">
+      <div>
+        <h1 className="text-2xl font-semibold text-white">Reading plan</h1>
+        <p className="mt-1 text-sm text-white/40">
+          {plan.name} — read-only viewer
+        </p>
+      </div>
       <AdminReadingPlanTable rows={rows} />
     </div>
   );

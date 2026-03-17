@@ -23,11 +23,12 @@ export function MoodSelector({ value, onChange }: MoodSelectorProps) {
           key={v}
           type="button"
           onClick={() => onChange(value === v ? null : v)}
-          className={`flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition-colors ${
+          className={[
+            "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-all duration-150",
             value === v
-              ? "border-zinc-900 bg-zinc-100 dark:border-zinc-100 dark:bg-zinc-700"
-              : "border-zinc-200 hover:bg-zinc-50 dark:border-zinc-600 dark:hover:bg-zinc-800"
-          }`}
+              ? "border-indigo-400/60 bg-indigo-500/30 text-white shadow shadow-indigo-500/20"
+              : "border-white/20 bg-white/[0.06] text-white/70 hover:bg-white/[0.12] hover:text-white hover:border-white/30",
+          ].join(" ")}
         >
           <span aria-hidden>{emoji}</span>
           <span>{label}</span>

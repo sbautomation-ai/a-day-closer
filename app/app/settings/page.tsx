@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db";
-import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { GlassCard, GlassCardHeader, GlassCardContent } from "@/components/ui/GlassCard";
 import { SettingsForm } from "./SettingsForm";
 
 export default async function SettingsPage() {
@@ -18,26 +18,22 @@ export default async function SettingsPage() {
   });
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-        Settings
-      </h1>
+    <div className="mx-auto max-w-lg space-y-6">
+      <h1 className="px-1 text-2xl font-semibold text-white">Settings</h1>
 
-      <Card>
-        <CardHeader>
-          <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
-            Profile & preferences
-          </h2>
-        </CardHeader>
-        <CardContent>
+      <GlassCard>
+        <GlassCardHeader>
+          <p className="text-sm font-medium text-white/60">Profile &amp; preferences</p>
+        </GlassCardHeader>
+        <GlassCardContent>
           <SettingsForm
             userId={authUser.id}
             defaultName={user?.name ?? ""}
             defaultReadingPace={settings?.readingPace ?? "medium"}
             defaultReminderTime={settings?.preferredReminderTime ?? ""}
           />
-        </CardContent>
-      </Card>
+        </GlassCardContent>
+      </GlassCard>
     </div>
   );
 }

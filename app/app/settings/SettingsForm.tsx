@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveSettings } from "@/lib/actions/settings";
-import { Button } from "@/components/ui/Button";
+import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Input } from "@/components/ui/Input";
 
 type SettingsFormProps = {
@@ -45,9 +45,9 @@ export function SettingsForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
-        <label htmlFor="name" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="name" className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-white/40">
           Name
         </label>
         <Input
@@ -58,23 +58,25 @@ export function SettingsForm({
           placeholder="Your name"
         />
       </div>
+
       <div>
-        <label htmlFor="readingPace" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="readingPace" className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-white/40">
           Reading pace
         </label>
         <select
           id="readingPace"
           value={readingPace}
           onChange={(e) => setReadingPace(e.target.value)}
-          className="block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100"
+          className="block w-full rounded-xl border border-white/20 bg-white/[0.08] px-4 py-2.5 text-white backdrop-blur-sm focus:border-white/40 focus:bg-white/[0.12] focus:outline-none focus:ring-1 focus:ring-white/25 transition-colors duration-150"
         >
-          <option value="short">Short</option>
-          <option value="medium">Medium</option>
-          <option value="long">Long</option>
+          <option value="short" className="bg-slate-900 text-white">Short</option>
+          <option value="medium" className="bg-slate-900 text-white">Medium</option>
+          <option value="long" className="bg-slate-900 text-white">Long</option>
         </select>
       </div>
+
       <div>
-        <label htmlFor="reminderTime" className="mb-1 block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        <label htmlFor="reminderTime" className="mb-1.5 block text-xs font-medium uppercase tracking-wider text-white/40">
           Preferred reminder time (optional)
         </label>
         <Input
@@ -83,22 +85,26 @@ export function SettingsForm({
           value={reminderTime}
           onChange={(e) => setReminderTime(e.target.value)}
         />
-        <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-          Reminders are not sent yet; this is saved for future use.
+        <p className="mt-1.5 text-xs text-white/30">
+          Reminders are not sent yet — saved for future use.
         </p>
       </div>
+
       {message && (
         <p
           className={`text-sm ${
-            message.type === "error" ? "text-red-600 dark:text-red-400" : "text-green-600 dark:text-green-400"
+            message.type === "error" ? "text-red-300" : "text-emerald-300"
           }`}
         >
           {message.text}
         </p>
       )}
-      <Button type="submit" disabled={loading}>
-        {loading ? "Saving…" : "Save changes"}
-      </Button>
+
+      <div className="border-t border-white/10 pt-4">
+        <PrimaryButton type="submit" disabled={loading} className="py-2.5 px-6">
+          {loading ? "Saving…" : "Save changes"}
+        </PrimaryButton>
+      </div>
     </form>
   );
 }

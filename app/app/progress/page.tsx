@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db";
-import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { GlassCard, GlassCardHeader, GlassCardContent } from "@/components/ui/GlassCard";
 
 const DEFAULT_PLAN_SLUG = "core-365-day-journey";
 
@@ -13,7 +13,6 @@ function buildMonthGrid(entries: Date[]): DayCell[] {
   const now = new Date();
   const year = now.getFullYear();
   const month = now.getMonth();
-  const start = new Date(year, month, 1);
   const end = new Date(year, month + 1, 0);
 
   const entrySet = new Set(entries.map((d) => d.toISOString().slice(0, 10)));
@@ -40,13 +39,13 @@ export default async function ProgressPage() {
   });
   if (!plan) {
     return (
-      <Card>
-        <CardContent className="pt-6">
-          <p className="text-zinc-600 dark:text-zinc-400">
+      <GlassCard>
+        <GlassCardContent>
+          <p className="text-white/60">
             No plan found. Run the seed script to create the default plan.
           </p>
-        </CardContent>
-      </Card>
+        </GlassCardContent>
+      </GlassCard>
     );
   }
 
@@ -72,95 +71,86 @@ export default async function ProgressPage() {
     year: "numeric",
   });
 
+  const startOfMonth2 = new Date(now.getFullYear(), now.getMonth(), 1);
+  const firstWeekday = startOfMonth2.getDay();
+
+  const stats = [
+    { label: "Current streak", value: progress?.currentStreak ?? 0 },
+    { label: "Longest streak", value: progress?.longestStreak ?? 0 },
+    { label: "Days this month", value: monthEntries.length },
+  ];
+
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
-        Progress
-      </h1>
+    <div className="mx-auto max-w-lg space-y-6">
+      <h1 className="px-1 text-2xl font-semibold text-white">Progress</h1>
 
-      <Card>
-        <CardHeader>
-          <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
-            Streak
-          </h2>
-        </CardHeader>
-        <CardContent className="grid gap-4 sm:grid-cols-3">
-          <div>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Current streak
-            </p>
-            <p className="text-3xl font-semibold">
-              {progress?.currentStreak ?? 0}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Longest streak
-            </p>
-            <p className="text-3xl font-semibold">
-              {progress?.longestStreak ?? 0}
-            </p>
-          </div>
-          <div>
-            <p className="text-sm text-zinc-500 dark:text-zinc-400">
-              Days read this month
-            </p>
-            <p className="text-3xl font-semibold">
-              {monthEntries.length}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      {/* Streak stats */}
+      <GlassCard>
+        <div className="border-b border-white/10 px-6 py-4">
+          <p className="text-sm font-medium text-white/60">Streak</p>
+        </div>
+        <div className="grid grid-cols-3 gap-px">
+          {stats.map(({ label, value }, i) => (
+            <div
+              key={label}
+              className={[
+                "px-5 py-5",
+                i < stats.length - 1 ? "border-r border-white/10" : "",
+              ].join(" ")}
+            >
+              <p className="text-xs text-white/40">{label}</p>
+              <p className="mt-1 text-3xl font-semibold text-white">{value}</p>
+            </div>
+          ))}
+        </div>
+      </GlassCard>
 
-      <Card>
-        <CardHeader>
-          <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
-            Calendar
-          </h2>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            {monthLabel}
-          </p>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-7 gap-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => (
-              <div key={d}>{d}</div>
+      {/* Monthly calendar */}
+      <GlassCard>
+        <GlassCardHeader>
+          <div className="flex items-baseline justify-between">
+            <p className="text-sm font-medium text-white/60">Calendar</p>
+            <p className="text-xs text-white/35">{monthLabel}</p>
+          </div>
+        </GlassCardHeader>
+        <GlassCardContent>
+          {/* Day labels */}
+          <div className="mb-2 grid grid-cols-7 gap-1.5 text-center">
+            {["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"].map((d) => (
+              <div key={d} className="text-xs text-white/30">
+                {d}
+              </div>
             ))}
           </div>
-          <div className="mt-2 grid grid-cols-7 gap-2 text-center text-sm">
-            {(() => {
-              const firstWeekday = startOfMonth.getDay();
-              const blanks = Array.from({ length: firstWeekday }, (_, i) => (
-                <div key={`blank-${i}`} />
-              ));
-              return [
-                ...blanks,
-                ...grid.map((cell) => {
-                  const day = cell.date.getDate();
-                  const key = cell.date.toISOString().slice(0, 10);
-                  const isToday =
-                    cell.date.toDateString() === now.toDateString();
-                  return (
-                    <div
-                      key={key}
-                      className={[
-                        "flex h-9 items-center justify-center rounded-md border text-xs font-medium",
-                        cell.hasEntry
-                          ? "border-emerald-500 bg-emerald-50 text-emerald-800 dark:border-emerald-400/80 dark:bg-emerald-900/40 dark:text-emerald-100"
-                          : "border-zinc-200 bg-white text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400",
-                        isToday ? "ring-2 ring-emerald-500 ring-offset-2 ring-offset-zinc-50 dark:ring-offset-zinc-950" : "",
-                      ].join(" ")}
-                    >
-                      {day}
-                    </div>
-                  );
-                }),
-              ];
-            })()}
+          {/* Day cells */}
+          <div className="grid grid-cols-7 gap-1.5 text-center text-sm">
+            {Array.from({ length: firstWeekday }, (_, i) => (
+              <div key={`blank-${i}`} />
+            ))}
+            {grid.map((cell) => {
+              const day = cell.date.getDate();
+              const key = cell.date.toISOString().slice(0, 10);
+              const isToday = cell.date.toDateString() === now.toDateString();
+              return (
+                <div
+                  key={key}
+                  className={[
+                    "flex h-9 items-center justify-center rounded-lg text-xs font-medium border transition-colors",
+                    cell.hasEntry
+                      ? "border-indigo-400/40 bg-indigo-500/25 text-indigo-200"
+                      : "border-white/10 bg-white/[0.04] text-white/35",
+                    isToday
+                      ? "ring-1 ring-indigo-400 ring-offset-1 ring-offset-transparent"
+                      : "",
+                  ].join(" ")}
+                >
+                  {day}
+                </div>
+              );
+            })}
           </div>
-        </CardContent>
-      </Card>
+        </GlassCardContent>
+      </GlassCard>
     </div>
   );
 }
-

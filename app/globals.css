@@ -1,26 +1,57 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont,
+    "SF Pro Text", "Helvetica Neue", sans-serif;
   --font-mono: var(--font-geist-mono);
+
+  /* Primary accent — soft indigo */
+  --color-primary: #818cf8;
+  --color-primary-deep: #6366f1;
+
+  /* Glass-surface helpers (used in arbitrary classes) */
+  --color-glass-white: rgba(255, 255, 255, 0.1);
+  --color-glass-border: rgba(255, 255, 255, 0.15);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Global background: dawn-to-dusk gradient, fixed so it never scrolls ── */
+html {
+  min-height: 100%;
+  background:
+    linear-gradient(
+      150deg,
+      #0d1b2a 0%,
+      #1b2d52 30%,
+      #1e1245 60%,
+      #0d1b2a 100%
+    )
+    no-repeat fixed;
+  background-size: cover;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100dvh;
+  color: #f1f5f9;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.65;
+}
+
+/* ── Scrollbar polish (optional, WebKit only) ── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+
+/* ── Selection ── */
+::selection {
+  background: rgba(129, 140, 248, 0.35);
+  color: #f1f5f9;
 }

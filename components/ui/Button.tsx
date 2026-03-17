@@ -12,15 +12,17 @@ export function Button({
   ...props
 }: ButtonProps) {
   const base =
-    "inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
-  const variants = {
+    "inline-flex items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent disabled:opacity-50 disabled:pointer-events-none";
+
+  const variants: Record<string, string> = {
     primary:
-      "bg-zinc-900 text-white hover:bg-zinc-800 focus:ring-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200",
+      "bg-gradient-to-r from-indigo-500 to-indigo-400 text-white shadow shadow-indigo-500/20 hover:brightness-110 hover:-translate-y-px active:translate-y-0 focus-visible:ring-indigo-400",
     secondary:
-      "border border-zinc-300 bg-white text-zinc-700 hover:bg-zinc-50 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700",
+      "border border-white/20 bg-white/10 text-white/90 backdrop-blur-sm hover:bg-white/15 focus-visible:ring-white/30",
     ghost:
-      "text-zinc-700 hover:bg-zinc-100 focus:ring-zinc-500 dark:text-zinc-300 dark:hover:bg-zinc-800",
+      "text-white/70 hover:text-white hover:bg-white/10 focus-visible:ring-white/30",
   };
+
   return (
     <button
       className={`${base} ${variants[variant]} ${className}`}

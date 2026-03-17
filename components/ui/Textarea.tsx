@@ -7,7 +7,16 @@ export const Textarea = React.forwardRef<
   return (
     <textarea
       ref={ref}
-      className={`block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-zinc-900 placeholder-zinc-500 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-100 dark:placeholder-zinc-400 ${className}`}
+      className={[
+        "block w-full rounded-xl border border-white/20 bg-white/[0.08]",
+        "px-4 py-3 text-white placeholder-white/40",
+        "backdrop-blur-sm resize-none",
+        "focus:border-white/40 focus:bg-white/[0.12] focus:outline-none focus:ring-1 focus:ring-white/25",
+        "transition-colors duration-150 leading-relaxed",
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
       {...props}
     />
   );

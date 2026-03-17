@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/Card";
+import { GlassCard, GlassCardContent, GlassCardHeader } from "@/components/ui/GlassCard";
 
 type Row = {
   id: string;
@@ -18,76 +18,85 @@ export function AdminReadingPlanTable({ rows }: { rows: Row[] }) {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <CardContent className="overflow-x-auto p-0">
+      <GlassCard>
+        <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-800/50">
-                <th className="px-4 py-2 font-medium">Day</th>
-                <th className="px-4 py-2 font-medium">Season</th>
-                <th className="px-4 py-2 font-medium">Reference</th>
-                <th className="max-w-[200px] px-4 py-2 font-medium">Explanation</th>
+              <tr className="border-b border-white/10 bg-white/[0.04]">
+                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-white/40">Day</th>
+                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-white/40">Season</th>
+                <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-white/40">Reference</th>
+                <th className="hidden px-4 py-3 text-xs font-medium uppercase tracking-wider text-white/40 sm:table-cell">
+                  Explanation
+                </th>
               </tr>
             </thead>
             <tbody>
-              {rows.map((row) => (
+              {rows.map((row, idx) => (
                 <tr
                   key={row.id}
                   onClick={() => setSelected(row)}
-                  className="cursor-pointer border-b border-zinc-100 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:hover:bg-zinc-800/50"
+                  className={[
+                    "cursor-pointer transition-colors duration-100 hover:bg-white/[0.05]",
+                    idx < rows.length - 1 ? "border-b border-white/[0.06]" : "",
+                    selected?.id === row.id ? "bg-indigo-500/10" : "",
+                  ].join(" ")}
                 >
-                  <td className="px-4 py-2">{row.dayIndex}</td>
-                  <td className="px-4 py-2">{row.season}</td>
-                  <td className="px-4 py-2">{row.bibleReference}</td>
-                  <td className="max-w-[200px] truncate px-4 py-2 text-zinc-500 dark:text-zinc-400">
+                  <td className="px-4 py-3 text-white/60">{row.dayIndex}</td>
+                  <td className="px-4 py-3 text-white/80">{row.season}</td>
+                  <td className="px-4 py-3 font-medium text-white">{row.bibleReference}</td>
+                  <td className="hidden max-w-[220px] truncate px-4 py-3 text-white/40 sm:table-cell">
                     {row.explanationPreview}
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-        </CardContent>
-      </Card>
+        </div>
+      </GlassCard>
 
       {selected && (
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
-            <h2 className="text-lg font-medium">
+        <GlassCard>
+          <GlassCardHeader className="flex flex-row items-center justify-between">
+            <h2 className="text-base font-semibold text-white">
               Day {selected.dayIndex} · {selected.season} · {selected.bibleReference}
             </h2>
             <button
               type="button"
               onClick={() => setSelected(null)}
-              className="text-sm text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-400"
+              className="rounded-full px-3 py-1 text-xs text-white/40 hover:text-white hover:bg-white/10 transition-colors"
             >
               Close
             </button>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          </GlassCardHeader>
+          <GlassCardContent className="space-y-5">
             <div>
-              <h3 className="mb-1 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+              <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-white/40">
                 Explanation
-              </h3>
-              <p className="whitespace-pre-wrap text-zinc-800 dark:text-zinc-200">
+              </p>
+              <p className="whitespace-pre-wrap text-sm leading-relaxed text-white/70">
                 {selected.explanation || "(empty)"}
               </p>
             </div>
             <div>
-              <h3 className="mb-1 text-sm font-medium text-zinc-500 dark:text-zinc-400">
+              <p className="mb-1.5 text-xs font-medium uppercase tracking-wider text-white/40">
                 Reflection prompts
-              </h3>
+              </p>
               {selected.reflectionPrompts.length === 0 ? (
-                <p className="text-zinc-500 dark:text-zinc-400">(none)</p>
+                <p className="text-sm text-white/35">(none)</p>
               ) : (
-                <ul className="list-inside list-disc space-y-1 text-zinc-800 dark:text-zinc-200">
+                <ul className="space-y-1.5">
                   {selected.reflectionPrompts.map((p, i) => (
-                    <li key={i}>{p}</li>
+                    <li key={i} className="flex gap-2.5 text-sm text-white/65">
+                      <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-indigo-400" />
+                      {p}
+                    </li>
                   ))}
                 </ul>
               )}
             </div>
-          </CardContent>
-        </Card>
+          </GlassCardContent>
+        </GlassCard>
       )}
     </div>
   );
