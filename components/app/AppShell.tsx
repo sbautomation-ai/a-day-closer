@@ -1,5 +1,7 @@
+@@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -25,11 +27,19 @@ export function AppShell({ children, userEmail: _userEmail, signOut, showAdminLi
       {/* Glass header */}
       <header className="sticky top-0 z-20 border-b border-white/10 bg-white/[0.06] backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-2 px-4 py-3">
-          <Link
-            href="/app/today"
-            className="text-base font-semibold text-white/90 tracking-tight hover:text-white transition-colors"
-          >
-            A Day Closer
+          <Link href="/app/today" className="flex items-center gap-2">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-white/5">
+              <Image
+                src="/brand/a-day-closer.png"
+                alt="A Day Closer"
+                width={24}
+                height={24}
+                priority
+              />
+            </span>
+            <span className="text-base font-semibold text-white/90 tracking-tight hover:text-white transition-colors">
+              a day closer
+            </span>
           </Link>
 
           <nav className="flex items-center gap-0.5 flex-wrap">

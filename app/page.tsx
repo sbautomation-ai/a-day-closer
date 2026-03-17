@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -8,9 +9,20 @@ export default function LandingPage() {
       {/* Glass header */}
       <header className="sticky top-0 z-20 border-b border-white/10 bg-white/[0.06] backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3">
-          <span className="text-base font-semibold text-white/90 tracking-tight">
-            A Day Closer
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-white/5">
+              <Image
+                src="/brand/a-day-closer.png"
+                alt="A Day Closer"
+                width={24}
+                height={24}
+                priority
+              />
+            </span>
+            <span className="text-base font-semibold text-white/90 tracking-tight">
+              a day closer
+            </span>
+          </div>
           <nav className="flex items-center gap-2">
             <Link
               href="/login"
