@@ -81,4 +81,13 @@ model UserSettings {
   user                  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   readingPace           String?
   preferredReminderTime String?
+  // Phase 1
+  timezone              String?
+  dayRolloverTime       String?
+  textSize              String?
+  highContrastReading   Boolean?
+  // Phase 2
+  emailReminderEnabled  Boolean?
+  emailReminderFrequency String?
+  weeklySummaryEnabled  Boolean?
 }

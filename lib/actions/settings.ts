@@ -10,6 +10,15 @@ export async function saveSettings(
     name: string | null;
     readingPace: string | null;
     preferredReminderTime: string | null;
+    // Phase 1
+    timezone?: string | null;
+    dayRolloverTime?: string | null;
+    textSize?: string | null;
+    highContrastReading?: boolean | null;
+    // Phase 2
+    emailReminderEnabled?: boolean | null;
+    emailReminderFrequency?: string | null;
+    weeklySummaryEnabled?: boolean | null;
   }
 ): Promise<SaveSettingsResult> {
   try {
@@ -23,10 +32,24 @@ export async function saveSettings(
         userId,
         readingPace: data.readingPace ?? undefined,
         preferredReminderTime: data.preferredReminderTime ?? undefined,
+        timezone: data.timezone ?? undefined,
+        dayRolloverTime: data.dayRolloverTime ?? undefined,
+        textSize: data.textSize ?? undefined,
+        highContrastReading: data.highContrastReading ?? undefined,
+        emailReminderEnabled: data.emailReminderEnabled ?? undefined,
+        emailReminderFrequency: data.emailReminderFrequency ?? undefined,
+        weeklySummaryEnabled: data.weeklySummaryEnabled ?? undefined,
       },
       update: {
         readingPace: data.readingPace ?? undefined,
         preferredReminderTime: data.preferredReminderTime ?? undefined,
+        timezone: data.timezone ?? undefined,
+        dayRolloverTime: data.dayRolloverTime ?? undefined,
+        textSize: data.textSize ?? undefined,
+        highContrastReading: data.highContrastReading ?? undefined,
+        emailReminderEnabled: data.emailReminderEnabled ?? undefined,
+        emailReminderFrequency: data.emailReminderFrequency ?? undefined,
+        weeklySummaryEnabled: data.weeklySummaryEnabled ?? undefined,
       },
     });
     return { ok: true };

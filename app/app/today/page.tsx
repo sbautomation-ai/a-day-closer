@@ -1,11 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
-import { getTodayReading, getTodayEntry, toEntryDate } from "@/lib/today";
+import { getTodayReading, getTodayEntry, toEntryDate, resolveUserToday } from "@/lib/today";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { TodayClient } from "./TodayClient";
+import { prisma } from "@/lib/db";
 
 function formatBibleTextWithSuperscriptVerses(text: string): string {
-  // Turn leading verse numbers like "1 Comfort..." into superscripts.
-  // Also handles verse numbers after punctuation/newlines.
   return text.replace(/(^|[\s\u00A0])(\d+)(?=\s)/g, (match, before, num) => {
     return (
       before +
@@ -14,6 +13,12 @@ function formatBibleTextWithSuperscriptVerses(text: string): string {
   });
 }
 
+const TEXT_SIZE_CLASSES: Record<string, string> = {
+  small: "text-xs leading-relaxed",
+  default: "text-sm leading-relaxed",
+  large: "text-base leading-loose",
+};
+
 export default async function TodayPage() {
   const supabase = await createClient();
   const {
@@ -21,13 +26,24 @@ export default async function TodayPage() {
   } = await supabase.auth.getUser();
   if (!user) return null;
 
+  const settings = await prisma.userSettings.findUnique({
+    where: { userId: user.id },
+  });
+
+  const tz = settings?.timezone ?? null;
+  const rollover = settings?.dayRolloverTime ?? null;
+  const textSize = settings?.textSize ?? "default";
+  const highContrast = settings?.highContrastReading ?? false;
+
   const [todayData, existingEntry] = await Promise.all([
-    getTodayReading(user.id),
-    getTodayEntry(user.id),
+    getTodayReading(user.id, tz, rollover),
+    getTodayEntry(user.id, tz, rollover),
   ]);
 
   const { readingDay, progress } = todayData;
-  const todayLabel = toEntryDate(new Date());
+  const todayLabel = toEntryDate(resolveUserToday(tz, rollover));
+
+  const textCls = TEXT_SIZE_CLASSES[textSize] ?? TEXT_SIZE_CLASSES.default;
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
@@ -56,7 +72,7 @@ export default async function TodayPage() {
           </p>
         </GlassCard>
       ) : (
-        <GlassCard>
+        <GlassCard className={highContrast ? "bg-white/[0.13]" : ""}>
           {/* Scripture reference */}
           <div className="border-b border-white/10 px-6 py-5">
             <p className="text-xs font-medium uppercase tracking-wider text-white/40">
@@ -70,9 +86,9 @@ export default async function TodayPage() {
           <div className="space-y-6 px-6 py-5">
             {/* Bible text */}
             {("bibleText" in readingDay && (readingDay as any).bibleText) && (
-              <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-4 text-sm leading-relaxed text-white/80 backdrop-blur-sm">
+              <div className={`rounded-xl border border-white/10 bg-black/30 px-4 py-4 backdrop-blur-sm ${highContrast ? "text-white/95" : "text-white/80"}`}>
                 <p
-                  className="whitespace-pre-wrap"
+                  className={textCls}
                   dangerouslySetInnerHTML={{
                     __html: formatBibleTextWithSuperscriptVerses(
                       (readingDay as any).bibleText as string
@@ -84,7 +100,7 @@ export default async function TodayPage() {
 
             {/* Explanation */}
             {readingDay.explanation ? (
-              <p className="text-sm leading-relaxed text-white/70 whitespace-pre-wrap">
+              <p className={`${textCls} ${highContrast ? "text-white/85" : "text-white/70"} whitespace-pre-wrap`}>
                 {readingDay.explanation}
               </p>
             ) : (
@@ -102,7 +118,7 @@ export default async function TodayPage() {
                 </p>
                 <ul className="space-y-2">
                   {(readingDay.reflectionPrompts as string[]).map((p, i) => (
-                    <li key={i} className="flex gap-2.5 text-sm text-white/65">
+                    <li key={i} className={`flex gap-2.5 ${textCls} ${highContrast ? "text-white/80" : "text-white/65"}`}>
                       <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-indigo-400" />
                       {p}
                     </li>
@@ -121,6 +137,7 @@ export default async function TodayPage() {
               defaultJournal={existingEntry?.journalText ?? ""}
               defaultMood={existingEntry?.mood ?? null}
               alreadyCompleted={!!existingEntry}
+              textSize={textSize}
             />
           </div>
         </GlassCard>

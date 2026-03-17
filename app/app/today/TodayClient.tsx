@@ -7,12 +7,19 @@ import { PrimaryButton } from "@/components/ui/PrimaryButton";
 import { Textarea } from "@/components/ui/Textarea";
 import { MoodSelector } from "@/components/today/MoodSelector";
 
+const TEXT_SIZE_CLASSES: Record<string, string> = {
+  small: "text-xs leading-relaxed",
+  default: "text-sm leading-relaxed",
+  large: "text-base leading-loose",
+};
+
 type TodayClientProps = {
   userId: string;
   readingDayId: string;
   defaultJournal: string;
   defaultMood: number | null;
   alreadyCompleted: boolean;
+  textSize?: string;
 };
 
 export function TodayClient({
@@ -21,12 +28,16 @@ export function TodayClient({
   defaultJournal,
   defaultMood,
   alreadyCompleted,
+  textSize = "default",
 }: TodayClientProps) {
   const router = useRouter();
   const [journalText, setJournalText] = useState(defaultJournal);
   const [mood, setMood] = useState<number | null>(defaultMood);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const textCls = TEXT_SIZE_CLASSES[textSize] ?? TEXT_SIZE_CLASSES.default;
+  const textareaRows = textSize === "large" ? 6 : textSize === "small" ? 4 : 5;
 
   async function handleSubmit() {
     setLoading(true);
@@ -56,7 +67,8 @@ export function TodayClient({
           value={journalText}
           onChange={(e) => setJournalText(e.target.value)}
           placeholder="Reflect on the reading…"
-          rows={5}
+          rows={textareaRows}
+          className={textCls}
         />
       </div>
       {error && (
