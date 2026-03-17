@@ -20,6 +20,15 @@ const MOOD_LABELS: Record<number, string> = {
   5: "Great",
 };
 
+function formatBibleTextWithSuperscriptVerses(text: string): string {
+  return text.replace(/(^|[\s\u00A0])(\d+)(?=\s)/g, (match, before, num) => {
+    return (
+      before +
+      `<sup class="align-super text-[0.65em] opacity-70 mr-1">${num}</sup>`
+    );
+  });
+}
+
 export default async function EntryDetailPage({
   params,
 }: {
@@ -66,9 +75,14 @@ export default async function EntryDetailPage({
         <GlassCardContent className="space-y-5">
           {"bibleText" in entry.readingDay && entry.readingDay.bibleText && (
             <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-4 text-sm leading-relaxed text-white/80 backdrop-blur-sm">
-              <p className="whitespace-pre-wrap">
-                {entry.readingDay.bibleText as string}
-              </p>
+              <p
+                className="whitespace-pre-wrap"
+                dangerouslySetInnerHTML={{
+                  __html: formatBibleTextWithSuperscriptVerses(
+                    entry.readingDay.bibleText as string
+                  ),
+                }}
+              />
             </div>
           )}
           {entry.readingDay.explanation && (

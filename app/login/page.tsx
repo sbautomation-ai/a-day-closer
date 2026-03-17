@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { LoginForm } from "./LoginForm";
 import { GlassCard } from "@/components/ui/GlassCard";
@@ -8,10 +9,16 @@ export default function LoginPage() {
     <div className="flex min-h-dvh flex-col items-center justify-center px-4 py-16">
       <div className="w-full max-w-md space-y-6">
         <div className="text-center">
-          <Link href="/" className="text-xl font-semibold text-white/90 hover:text-white transition-colors">
-            A Day Closer
+          <Link href="/" className="inline-flex flex-col items-center gap-3">
+            <Image
+              src="/brand/a-day-closer-full.svg"
+              alt="a day closer"
+              width={220}
+              height={80}
+              priority
+            />
+            <p className="text-sm text-white/45">Welcome back</p>
           </Link>
-          <p className="mt-1 text-sm text-white/40">Welcome back</p>
         </div>
         <Suspense
           fallback={

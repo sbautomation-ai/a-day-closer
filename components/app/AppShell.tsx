@@ -27,10 +27,10 @@ export function AppShell({ children, userEmail: _userEmail, signOut, showAdminLi
       <header className="sticky top-0 z-20 border-b border-white/10 bg-white/[0.06] backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-2 px-4 py-3">
           <Link href="/app/today" className="flex items-center gap-2">
-            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-white/5">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-white/5 overflow-hidden">
               <Image
-                src="/brand/a-day-closer.png"
-                alt="A Day Closer"
+                src="/brand/a-day-closer-square.svg"
+                alt="a day closer"
                 width={24}
                 height={24}
                 priority

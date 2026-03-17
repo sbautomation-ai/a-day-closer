@@ -3,6 +3,17 @@ import { getTodayReading, getTodayEntry, toEntryDate } from "@/lib/today";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { TodayClient } from "./TodayClient";
 
+function formatBibleTextWithSuperscriptVerses(text: string): string {
+  // Turn leading verse numbers like "1 Comfort..." into superscripts.
+  // Also handles verse numbers after punctuation/newlines.
+  return text.replace(/(^|[\s\u00A0])(\d+)(?=\s)/g, (match, before, num) => {
+    return (
+      before +
+      `<sup class="align-super text-[0.65em] opacity-70 mr-1">${num}</sup>`
+    );
+  });
+}
+
 export default async function TodayPage() {
   const supabase = await createClient();
   const {
@@ -60,9 +71,14 @@ export default async function TodayPage() {
             {/* Bible text */}
             {("bibleText" in readingDay && (readingDay as any).bibleText) && (
               <div className="rounded-xl border border-white/10 bg-black/30 px-4 py-4 text-sm leading-relaxed text-white/80 backdrop-blur-sm">
-                <p className="whitespace-pre-wrap">
-                  {(readingDay as any).bibleText as string}
-                </p>
+                <p
+                  className="whitespace-pre-wrap"
+                  dangerouslySetInnerHTML={{
+                    __html: formatBibleTextWithSuperscriptVerses(
+                      (readingDay as any).bibleText as string
+                    ),
+                  }}
+                />
               </div>
             )}
 
