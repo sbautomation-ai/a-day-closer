@@ -1,0 +1,84 @@
+// A Day Closer – Prisma schema for Supabase Postgres
+// Connection URLs are in prisma.config.ts (Prisma 7 requirement).
+// Run: npx prisma migrate dev   (creates DB tables)
+// Run: npx prisma generate      (generates TypeScript client)
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String             @id
+  email        String
+  name         String?
+  createdAt    DateTime           @default(now())
+  entries      Entry[]
+  planProgress UserPlanProgress[]
+  settings     UserSettings?
+}
+
+model ReadingPlan {
+  id          String             @id @default(uuid())
+  name        String
+  slug        String             @unique
+  description String?
+  isDefault   Boolean            @default(false)
+  readingDays ReadingDay[]
+  progress    UserPlanProgress[]
+}
+
+model ReadingDay {
+  id                String      @id @default(uuid())
+  planId            String
+  plan              ReadingPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  dayIndex          Int
+  season            String
+  bibleReference    String
+  bibleText         String?
+  explanation       String
+  reflectionPrompts Json
+  entries           Entry[]
+
+  @@unique([planId, dayIndex])
+}
+
+model Entry {
+  id           String     @id @default(uuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  readingDayId String
+  readingDay   ReadingDay @relation(fields: [readingDayId], references: [id], onDelete: Cascade)
+  entryDate    DateTime   @db.Date
+  journalText  String     @default("")
+  mood         Int?
+  createdAt    DateTime   @default(now())
+
+  @@unique([userId, entryDate])
+}
+
+model UserPlanProgress {
+  id                String      @id @default(uuid())
+  userId            String
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId            String
+  plan              ReadingPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  currentStreak     Int         @default(0)
+  longestStreak     Int         @default(0)
+  lastCompletedDate DateTime?   @db.Date
+  seasonDayIndexMap Json?
+
+  @@unique([userId, planId])
+}
+
+model UserSettings {
+  id                    String  @id @default(uuid())
+  userId                String  @unique
+  user                  User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  readingPace           String?
+  preferredReminderTime String?
+}
