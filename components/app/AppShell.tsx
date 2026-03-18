@@ -48,6 +48,7 @@ export function AppShell({ children, userEmail: _userEmail, signOut, showAdminLi
                 <Link
                   key={href}
                   href={href}
+                  aria-current={active ? "page" : undefined}
                   className={[
                     "rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-150",
                     active
@@ -62,6 +63,7 @@ export function AppShell({ children, userEmail: _userEmail, signOut, showAdminLi
             {showAdminLink && (
               <Link
                 href="/app/admin/reading-plan"
+                aria-current={pathname === "/app/admin/reading-plan" ? "page" : undefined}
                 className={[
                   "rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-150",
                   pathname === "/app/admin/reading-plan"

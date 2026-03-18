@@ -28,6 +28,11 @@ export default function LoginPage() {
           <LoginForm />
         </Suspense>
         <p className="text-center text-sm text-white/40">
+          <Link href="/forgot-password" className="font-medium text-indigo-300 hover:text-indigo-200 transition-colors">
+            Forgot password?
+          </Link>
+        </p>
+        <p className="text-center text-sm text-white/40">
           Don&apos;t have an account?{" "}
           <Link href="/signup" className="font-medium text-indigo-300 hover:text-indigo-200 transition-colors">
             Sign up

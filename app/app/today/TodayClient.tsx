@@ -20,6 +20,8 @@ type TodayClientProps = {
   defaultMood: number | null;
   alreadyCompleted: boolean;
   textSize?: string;
+  timezone?: string | null;
+  dayRolloverTime?: string | null;
 };
 
 export function TodayClient({
@@ -29,12 +31,15 @@ export function TodayClient({
   defaultMood,
   alreadyCompleted,
   textSize = "default",
+  timezone = null,
+  dayRolloverTime = null,
 }: TodayClientProps) {
   const router = useRouter();
   const [journalText, setJournalText] = useState(defaultJournal);
   const [mood, setMood] = useState<number | null>(defaultMood);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const textCls = TEXT_SIZE_CLASSES[textSize] ?? TEXT_SIZE_CLASSES.default;
   const textareaRows = textSize === "large" ? 6 : textSize === "small" ? 4 : 5;
@@ -42,10 +47,13 @@ export function TodayClient({
   async function handleSubmit() {
     setLoading(true);
     setError(null);
-    const res = await completeToday(userId, readingDayId, journalText, mood);
+    setShowSuccess(false);
+    const res = await completeToday(userId, readingDayId, journalText, mood, timezone, dayRolloverTime);
     setLoading(false);
     if (res.ok) {
+      setShowSuccess(true);
       router.refresh();
+      setTimeout(() => setShowSuccess(false), 4000);
     } else {
       setError(res.error);
     }
@@ -71,17 +79,22 @@ export function TodayClient({
           className={textCls}
         />
       </div>
+      {showSuccess && (
+        <p className="text-sm text-emerald-300">Saved. Day completed.</p>
+      )}
       {error && (
         <p className="text-sm text-red-300">{error}</p>
       )}
       <PrimaryButton
         onClick={handleSubmit}
-        disabled={loading || alreadyCompleted}
+        disabled={loading}
         fullWidth
         className="py-3"
       >
         {alreadyCompleted
-          ? "Completed today ✓"
+          ? loading
+            ? "Updating…"
+            : "Update entry"
           : loading
             ? "Saving…"
             : "Save & complete today"}

@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { getLiturgicalSeason } from "@/lib/liturgicalSeason";
-import { toEntryDate, ensureProgress } from "@/lib/today";
+import { toEntryDate, ensureProgress, resolveUserToday } from "@/lib/today";
 
 const DEFAULT_PLAN_SLUG = "core-365-day-journey";
 
@@ -14,15 +14,21 @@ export type CompleteTodayResult =
 
 /**
  * Creates or updates today's entry and updates streak + seasonDayIndexMap.
+ * When timezone is provided, "today" is resolved using the user's timezone and day rollover.
  */
 export async function completeToday(
   userId: string,
   readingDayId: string,
   journalText: string,
-  mood: number | null
+  mood: number | null,
+  timezone?: string | null,
+  dayRolloverTime?: string | null
 ): Promise<CompleteTodayResult> {
   try {
-    const today = new Date();
+    const today =
+      timezone != null && timezone !== ""
+        ? resolveUserToday(timezone, dayRolloverTime)
+        : new Date();
     const entryDateStr = toEntryDate(today);
     const entryDate = new Date(entryDateStr);
 

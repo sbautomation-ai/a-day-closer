@@ -3,6 +3,7 @@ import { prisma } from "@/lib/db";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { GlassCard, GlassCardContent, GlassCardHeader } from "@/components/ui/GlassCard";
+import { CopyVerseButton } from "@/components/today/CopyVerseButton";
 
 const MOOD_EMOJI: Record<number, string> = {
   1: "😔",
@@ -58,6 +59,19 @@ export default async function EntryDetailPage({
 
   if (!entry) notFound();
 
+  const [prevEntry, nextEntry] = await Promise.all([
+    prisma.entry.findFirst({
+      where: { userId: user.id, entryDate: { lt: entry.entryDate } },
+      orderBy: { entryDate: "desc" },
+      select: { id: true },
+    }),
+    prisma.entry.findFirst({
+      where: { userId: user.id, entryDate: { gt: entry.entryDate } },
+      orderBy: { entryDate: "asc" },
+      select: { id: true },
+    }),
+  ]);
+
   const dateStr = entry.entryDate.toISOString().slice(0, 10);
   const prompts = Array.isArray(entry.readingDay.reflectionPrompts)
     ? (entry.readingDay.reflectionPrompts as string[])
@@ -69,21 +83,50 @@ export default async function EntryDetailPage({
 
   return (
     <div className="mx-auto max-w-xl space-y-4">
-      <Link
-        href="/app/history"
-        className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-white/50 hover:text-white hover:bg-white/10 transition-all duration-150"
-      >
-        ← History
-      </Link>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <Link
+          href="/app/history"
+          className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+        >
+          ← History
+        </Link>
+        <div className="flex items-center gap-2">
+          {prevEntry ? (
+            <Link
+              href={`/app/history/${prevEntry.id}`}
+              className="rounded-full px-3 py-1.5 text-sm text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              ← Previous
+            </Link>
+          ) : null}
+          {nextEntry ? (
+            <Link
+              href={`/app/history/${nextEntry.id}`}
+              className="rounded-full px-3 py-1.5 text-sm text-white/50 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              Next →
+            </Link>
+          ) : null}
+        </div>
+      </div>
 
       <GlassCard className={highContrast ? "bg-white/[0.13]" : ""}>
         <GlassCardHeader>
           <p className="text-xs text-white/40">
             {dateStr} · {entry.readingDay.season}
           </p>
-          <h1 className="mt-0.5 text-xl font-semibold text-white">
-            {entry.readingDay.bibleReference}
-          </h1>
+          <div className="mt-0.5 flex flex-wrap items-start justify-between gap-3">
+            <h1 className="text-xl font-semibold text-white">
+              {entry.readingDay.bibleReference}
+            </h1>
+            {"bibleText" in entry.readingDay && entry.readingDay.bibleText && (
+              <CopyVerseButton
+                reference={entry.readingDay.bibleReference}
+                bibleText={entry.readingDay.bibleText as string}
+                appUrl={process.env.NEXT_PUBLIC_APP_URL}
+              />
+            )}
+          </div>
         </GlassCardHeader>
         <GlassCardContent className="space-y-5">
           {"bibleText" in entry.readingDay && entry.readingDay.bibleText && (

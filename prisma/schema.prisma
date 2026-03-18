@@ -87,7 +87,10 @@ model UserSettings {
   textSize              String?
   highContrastReading   Boolean?
   // Phase 2
-  emailReminderEnabled  Boolean?
+  emailReminderEnabled   Boolean?
   emailReminderFrequency String?
-  weeklySummaryEnabled  Boolean?
+  weeklySummaryEnabled   Boolean?
+  // Deduplication: track last send date per feature (server UTC date)
+  lastReminderSentDate   DateTime? @db.Date
+  lastWeeklySentDate     DateTime? @db.Date
 }

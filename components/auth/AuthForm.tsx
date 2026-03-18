@@ -19,10 +19,28 @@ export function AuthForm({ mode, onSuccess }: AuthFormProps) {
 
   const isSignUp = mode === "signup";
 
+  function validateForm(): string | null {
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail || !trimmedEmail.includes("@") || !trimmedEmail.includes(".")) {
+      return "Please enter a valid email address.";
+    }
+    if (password.length < 6) {
+      return "Password must be at least 6 characters.";
+    }
+    return null;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setMessage(null);
+
+    const validationError = validateForm();
+    if (validationError) {
+      setMessage({ type: "error", text: validationError });
+      return;
+    }
+
+    setLoading(true);
 
     const { createClient } = await import("@/lib/supabase/client");
     const supabase = createClient();

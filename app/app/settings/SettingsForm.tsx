@@ -82,10 +82,28 @@ export function SettingsForm({
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ type: "error" | "success"; text: string } | null>(null);
 
+  function validateSettings(): string | null {
+    const timePattern = /^([01]\d|2[0-3]):[0-5]\d$/;
+    if (reminderTime.trim() && !timePattern.test(reminderTime.trim())) {
+      return "Reminder time must be in HH:MM format (e.g. 07:00).";
+    }
+    if (dayRolloverTime.trim() && !timePattern.test(dayRolloverTime.trim())) {
+      return "Day rollover time must be in HH:MM format (e.g. 03:00).";
+    }
+    return null;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
     setMessage(null);
+
+    const validationError = validateSettings();
+    if (validationError) {
+      setMessage({ type: "error", text: validationError });
+      return;
+    }
+
+    setLoading(true);
     const res = await saveSettings(userId, {
       name: name.trim() || null,
       readingPace: readingPace || null,

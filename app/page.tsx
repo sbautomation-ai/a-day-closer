@@ -37,13 +37,13 @@ export default function LandingPage() {
       {/* Hero */}
       <main className="flex flex-1 flex-col items-center justify-center px-4 py-20 text-center">
         <div className="mx-auto max-w-xl space-y-6">
-          <p className="text-sm font-medium uppercase tracking-widest text-indigo-300/80">
+          <p className="text-sm font-semibold uppercase tracking-widest text-indigo-300/90">
             Daily devotional
           </p>
-          <h1 className="text-4xl font-semibold leading-tight tracking-tight text-white sm:text-5xl">
+          <h1 className="text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl">
             Build a daily rhythm of Scripture and reflection
           </h1>
-          <p className="text-lg text-white/60 leading-relaxed">
+          <p className="text-lg text-white/70 leading-relaxed">
             One passage, a short explanation, and a quiet place to journal.
             Build a sustainable habit that fits your life.
           </p>
@@ -60,6 +60,9 @@ export default function LandingPage() {
               Log in
             </Link>
           </div>
+          <p className="text-sm text-white/40">
+            Join others building a simple daily habit.
+          </p>
         </div>
 
         {/* Preview card — mock of the Today experience */}
@@ -108,8 +111,8 @@ export default function LandingPage() {
               </div>
             </div>
           </GlassCard>
-          <p className="mt-3 text-center text-xs text-white/30">
-            Preview — sign up to unlock your daily reading
+          <p className="mt-3 text-center text-sm text-white/40">
+            Sign up to start your first reading.
           </p>
         </div>
 
@@ -137,8 +140,14 @@ export default function LandingPage() {
         </div>
       </main>
 
-      <footer className="py-8 text-center text-xs text-white/25">
-        © {new Date().getFullYear()} A Day Closer
+      <footer className="flex flex-col items-center justify-center gap-2 py-8 text-center text-xs text-white/25 sm:flex-row sm:gap-4">
+        <span>© {new Date().getFullYear()} A Day Closer</span>
+        <Link
+          href="/about"
+          className="text-white/40 transition-colors hover:text-white/60"
+        >
+          About
+        </Link>
       </footer>
     </div>
   );

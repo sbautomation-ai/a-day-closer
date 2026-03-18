@@ -1,8 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { GlassCard, GlassCardContent } from "@/components/ui/GlassCard";
 import { AdminReadingPlanTable } from "./AdminReadingPlanTable";
+import { AdminFilters } from "./AdminFilters";
 
 const DEFAULT_PLAN_SLUG = "core-365-day-journey";
 
@@ -11,7 +13,11 @@ function truncate(s: string, max: number): string {
   return s.slice(0, max) + "…";
 }
 
-export default async function AdminReadingPlanPage() {
+type Props = {
+  searchParams: Promise<{ season?: string; dayMin?: string; dayMax?: string }>;
+};
+
+export default async function AdminReadingPlanPage({ searchParams }: Props) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -38,10 +44,17 @@ export default async function AdminReadingPlanPage() {
     );
   }
 
+  const params = await searchParams;
+  const filterSeason = params.season?.trim() ?? "";
+  const filterDayMin = parseInt(params.dayMin ?? "", 10);
+  const filterDayMax = parseInt(params.dayMax ?? "", 10);
+
   const readingDays = await prisma.readingDay.findMany({
     where: { planId: plan.id },
     orderBy: { dayIndex: "asc" },
   });
+
+  const allSeasons = [...new Set(readingDays.map((d) => d.season))].sort();
 
   type ReadingDayRow = {
     id: string;
@@ -51,7 +64,15 @@ export default async function AdminReadingPlanPage() {
     explanation: string;
     reflectionPrompts: unknown;
   };
-  const rows = readingDays.map((d: ReadingDayRow) => ({
+
+  const filtered = (readingDays as ReadingDayRow[]).filter((d) => {
+    if (filterSeason && d.season !== filterSeason) return false;
+    if (!Number.isNaN(filterDayMin) && d.dayIndex < filterDayMin) return false;
+    if (!Number.isNaN(filterDayMax) && d.dayIndex > filterDayMax) return false;
+    return true;
+  });
+
+  const rows = filtered.map((d) => ({
     id: d.id,
     dayIndex: d.dayIndex,
     season: d.season,
@@ -71,7 +92,31 @@ export default async function AdminReadingPlanPage() {
           {plan.name} — read-only viewer
         </p>
       </div>
-      <AdminReadingPlanTable rows={rows} />
+
+      <Suspense>
+        <AdminFilters
+          seasons={allSeasons}
+          currentSeason={filterSeason}
+          currentDayMin={Number.isNaN(filterDayMin) ? "" : String(filterDayMin)}
+          currentDayMax={Number.isNaN(filterDayMax) ? "" : String(filterDayMax)}
+        />
+      </Suspense>
+
+      {rows.length === 0 ? (
+        <GlassCard>
+          <GlassCardContent>
+            <p className="text-sm text-white/40">
+              No reading days match the current filters.
+            </p>
+          </GlassCardContent>
+        </GlassCard>
+      ) : (
+        <AdminReadingPlanTable rows={rows} />
+      )}
+
+      <p className="text-xs text-white/25">
+        Showing {rows.length} of {readingDays.length} day{readingDays.length !== 1 ? "s" : ""}
+      </p>
     </div>
   );
 }

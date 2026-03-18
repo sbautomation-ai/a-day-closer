@@ -17,12 +17,18 @@ type MoodSelectorProps = {
 
 export function MoodSelector({ value, onChange }: MoodSelectorProps) {
   return (
-    <div className="flex flex-wrap gap-2">
+    <div
+      className="flex flex-wrap gap-2"
+      role="group"
+      aria-label="How are you today? Select your mood."
+    >
       {MOODS.map(({ value: v, label, emoji }) => (
         <button
           key={v}
           type="button"
           onClick={() => onChange(value === v ? null : v)}
+          aria-pressed={value === v}
+          aria-label={label}
           className={[
             "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-all duration-150",
             value === v

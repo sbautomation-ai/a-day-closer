@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getTodayReading, getTodayEntry, toEntryDate, resolveUserToday } from "@/lib/today";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { TodayClient } from "./TodayClient";
+import { CopyVerseButton } from "@/components/today/CopyVerseButton";
 import { prisma } from "@/lib/db";
 
 function formatBibleTextWithSuperscriptVerses(text: string): string {
@@ -65,10 +66,19 @@ export default async function TodayPage() {
       </div>
 
       {!readingDay ? (
-        <GlassCard className="px-6 py-6">
-          <p className="text-white/60">
-            No reading is available for this season yet. Run the seed script to
-            load the plan, or try again later.
+        <GlassCard className="px-6 py-8 text-center">
+          <p className="text-base font-medium text-white/70">
+            We&apos;re still preparing this season&apos;s readings.
+          </p>
+          <p className="mt-2 text-sm text-white/40">
+            Check back soon — or browse your{" "}
+            <a
+              href="/app/history"
+              className="font-medium text-indigo-300 underline underline-offset-2 hover:text-indigo-200"
+            >
+              past entries
+            </a>{" "}
+            in the meantime.
           </p>
         </GlassCard>
       ) : (
@@ -78,9 +88,18 @@ export default async function TodayPage() {
             <p className="text-xs font-medium uppercase tracking-wider text-white/40">
               {readingDay.season}
             </p>
-            <p className="mt-1 text-xl font-semibold text-white">
-              {readingDay.bibleReference}
-            </p>
+            <div className="mt-1 flex flex-wrap items-start justify-between gap-3">
+              <p className="text-xl font-semibold text-white">
+                {readingDay.bibleReference}
+              </p>
+              {("bibleText" in readingDay && (readingDay as any).bibleText) && (
+                <CopyVerseButton
+                  reference={readingDay.bibleReference}
+                  bibleText={(readingDay as any).bibleText as string}
+                  appUrl={process.env.NEXT_PUBLIC_APP_URL}
+                />
+              )}
+            </div>
           </div>
 
           <div className="space-y-6 px-6 py-5">
@@ -138,6 +157,8 @@ export default async function TodayPage() {
               defaultMood={existingEntry?.mood ?? null}
               alreadyCompleted={!!existingEntry}
               textSize={textSize}
+              timezone={tz}
+              dayRolloverTime={rollover}
             />
           </div>
         </GlassCard>

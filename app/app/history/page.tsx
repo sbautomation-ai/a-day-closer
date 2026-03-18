@@ -1,25 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import { prisma } from "@/lib/db";
+import { resolveUserToday } from "@/lib/today";
 import Link from "next/link";
 import { GlassCard } from "@/components/ui/GlassCard";
+import { HistoryList } from "./HistoryList";
 
 const DEFAULT_PLAN_SLUG = "core-365-day-journey";
-
-const MOOD_EMOJI: Record<number, string> = {
-  1: "😔",
-  2: "😕",
-  3: "😐",
-  4: "🙂",
-  5: "😊",
-};
-
-const MOOD_LABELS: Record<number, string> = {
-  1: "Struggling",
-  2: "Low",
-  3: "Okay",
-  4: "Good",
-  5: "Great",
-};
+const PAGE_SIZE = 50;
 
 export default async function HistoryPage() {
   const supabase = await createClient();
@@ -43,8 +30,13 @@ export default async function HistoryPage() {
     where: { userId_planId: { userId: user.id, planId: plan.id } },
   });
 
-  const now = new Date();
-  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const settings = await prisma.userSettings.findUnique({
+    where: { userId: user.id },
+  });
+  const tz = settings?.timezone ?? null;
+  const rollover = settings?.dayRolloverTime ?? null;
+  const userToday = resolveUserToday(tz, rollover);
+  const startOfMonth = new Date(userToday.getFullYear(), userToday.getMonth(), 1);
   const entriesThisMonth = await prisma.entry.count({
     where: {
       userId: user.id,
@@ -56,8 +48,14 @@ export default async function HistoryPage() {
     where: { userId: user.id },
     include: { readingDay: true },
     orderBy: { entryDate: "desc" },
-    take: 100,
+    take: PAGE_SIZE,
   });
+
+  const hasMore = entries.length === PAGE_SIZE;
+  const nextCursor =
+    hasMore && entries.length > 0
+      ? entries[entries.length - 1]!.entryDate.toISOString().slice(0, 10)
+      : null;
 
   const stats = [
     { label: "Current streak", value: progress?.currentStreak ?? 0, unit: "days" },
@@ -96,55 +94,17 @@ export default async function HistoryPage() {
         <div className="border-b border-white/10 px-6 py-4">
           <p className="text-sm font-medium text-white/60">Past entries</p>
         </div>
-        {entries.length === 0 ? (
-          <div className="px-6 py-8 text-center">
-            <p className="text-sm text-white/40">
-              No entries yet. Complete a day on the Today page to see it here.
-            </p>
-          </div>
-        ) : (
-          <ul>
-            {entries.map(
-              (entry: {
-                id: string;
-                entryDate: Date;
-                journalText: string;
-                mood: number | null;
-                readingDay: { bibleReference: string };
-              }, idx) => {
-                const dateStr = entry.entryDate.toISOString().slice(0, 10);
-                return (
-                  <li key={entry.id}>
-                    <Link
-                      href={`/app/history/${entry.id}`}
-                      className={[
-                        "flex items-center justify-between gap-4 px-6 py-4 transition-all duration-150",
-                        "hover:bg-white/[0.05]",
-                        idx < entries.length - 1 ? "border-b border-white/[0.07]" : "",
-                      ].join(" ")}
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-white/80">{dateStr}</p>
-                        <p className="truncate text-sm text-white/40">
-                          {entry.readingDay.bibleReference}
-                        </p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-2">
-                        {entry.mood != null && (
-                          <span className="flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.06] px-2.5 py-1 text-xs text-white/50">
-                            <span aria-hidden>{MOOD_EMOJI[entry.mood]}</span>
-                            {MOOD_LABELS[entry.mood] ?? entry.mood}
-                          </span>
-                        )}
-                        <span className="text-indigo-400/60 text-sm">✓</span>
-                      </div>
-                    </Link>
-                  </li>
-                );
-              }
-            )}
-          </ul>
-        )}
+        <HistoryList
+          initialEntries={entries.map((e) => ({
+            id: e.id,
+            entryDate: e.entryDate,
+            journalText: e.journalText,
+            mood: e.mood,
+            readingDay: e.readingDay,
+          }))}
+          nextCursor={nextCursor}
+          userId={user.id}
+        />
       </GlassCard>
     </div>
   );
