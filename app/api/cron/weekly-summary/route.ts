@@ -5,7 +5,6 @@ import { resolveUserToday, toEntryDate } from "@/lib/today";
 import { authorizeCronRequest } from "@/lib/cron/auth";
 import { buildWeeklySummaryEmail } from "@/lib/email/weeklySummary";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_ADDRESS = process.env.EMAIL_FROM ?? "A Day Closer <noreply@adaycloser.app>";
 const DEFAULT_PLAN_SLUG = "core-365-day-journey";
 
@@ -13,6 +12,15 @@ export async function GET(request: Request) {
   if (!authorizeCronRequest(request)) {
     return new Response("Unauthorized", { status: 401 });
   }
+
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    return NextResponse.json(
+      { ok: false, error: "RESEND_API_KEY not configured" },
+      { status: 503 }
+    );
+  }
+  const resend = new Resend(apiKey);
 
   const usersWithSummary = await prisma.userSettings.findMany({
     where: { weeklySummaryEnabled: true },
